@@ -11,39 +11,37 @@ directories = {
 
 
 def people(docs, dirs):
-	result = 0
-	while result == 0:
-		# number = input('Введите номер документа: ')
-		for shl, numbers in dirs.items():
-			for num in numbers:
-				if number == num:
-					for person in docs:
-						if number == (person['number']):
-							final_result = person['name']
-							result += 1
-					if result == 0 and number == num:
-						final_result = 'Документ с таким номером хранится' \
-									   ' на полках, однако данные о ' \
-									   'человеке в базе отсутствуют.'
-						result += 1
-		if result == 0:
-			print('Документ с таким номером отсутствует '
-				  'в базе! Повторите ввод ')
-	return final_result
+	result = 'Документ с таким номером отсутствует в базе!'
+	number = str(input('Введите номер документа: '))
+	for shl, numbers in dirs.items():
+		for num in numbers:
+			if number == num:
+				for person in docs:
+					if number == person['number']:
+						result = person['name']
+						return result
+					else:
+						result = 'Документ с таким номером хранится ' \
+								 'на полках, однако данные о человеке ' \
+								 'в базе отсутствуют.'
+	return result
 
 
 def shelf(dirs):
 	result = 0
+	needed_shelf_number = ''
 	while result == 0:
 		number = input('Введите номер документа: ')
 		for shl, numbers in dirs.items():
 			for num in numbers:
 				if number == num:
 					needed_shelf = f'Документ находится на полке № {shl}'
+					needed_shelf_number = shl
 					result += 1
 		if result == 0:
-			print('Документ с таким номером отсутствует в базе! Повторите ввод ')
-	return needed_shelf
+			needed_shelf_number = 'Документ с таким номером отсутствует в базе!'
+			return needed_shelf_number
+	return needed_shelf_number
 
 
 def list_of_persons(docs):
@@ -54,22 +52,22 @@ def list_of_persons(docs):
 	return result_persons
 
 
-def add(docs, dirs):
-	new_type = input('Введите тип документа: ')
-	new_number = input('Ведите номер документа : ')
-	new_name = input('Введите имя и фамилию: ')
+def add(new_type, new_number, new_name, shelf):
 	new_person = {"type": new_type, "number": new_number, "name": new_name}
-	docs.append(new_person)
+	documents.append(new_person)
 	result = None
 	while result is None:
-		shelf = input('Введите номер полки, куда положить документ: ')
-		for position in dirs:
+		for position in directories:
 			if shelf == position:
-				dirs[position].append(new_number)
-				result = f'\n {docs} \n \n {dirs}'
+				directories[position].append(new_number)
+				result = f'\n {documents} \n \n {directories}'
+				number_of_docs = len(documents)
+				number_of_dirs = 0
+				number_of_dirs = sum([number_of_dirs + len(docums) for row, docums in directories.items()])
+				return [number_of_docs, number_of_dirs]
 		if result == None:
-			print('Такой полки не существует! Повторите ввод ')
-	return result
+			return 'Такой полки не существует!'
+
 
 
 def delete(docs, dirs):
@@ -86,13 +84,14 @@ def delete(docs, dirs):
 							docs.remove(person)
 							result +=1
 		if result == 0:
-			print('Документ с таким номером отсутствует '
-				  'в базе! Повторите ввод.')
+			return 'Документ с таким номером отсутствует в базе!'
 	result_del = f'\n {docs} \n \n {dirs}'
-	return result_del
+	number_of_dirs = 0
+	number_of_dirs = sum([number_of_dirs + len(docums) for row, docums in dirs.items()])
+	return [len(docs), number_of_dirs]
 
 
-def move(dirs):
+def move(dirs, desired_shelf):
 	result = 0
 	result2 = 0
 	while result == 0:
@@ -103,16 +102,17 @@ def move(dirs):
 					numbers.remove(num)
 					result += 1
 		if result == 0:
-			print('Документ с таким номером отсутствует в базе! Повторите ввод')
+			return 'Документ с таким номером отсутствует в базе!'
 	while result2 == 0:
-		desired_shelf = input('Введите номер полки для перемещения: ')
+		# desired_shelf = input('Введите номер полки для перемещения: ')
 		if desired_shelf in dirs:
 			dirs[desired_shelf].append(number)
 			result2 += 1
+			str(desired_shelf)
+			length = len(dirs[desired_shelf])
 		else:
-			print('Такой полки не существует! Повторите ввод ')
-			result2 = 0
-	return dirs
+			return 'Такой полки не существует!'
+	return length
 
 
 def add_shelf(last_dirs):
@@ -121,12 +121,12 @@ def add_shelf(last_dirs):
 		desired_shelf = input('Введите номер полки для создания: ')
 		for shelf in last_dirs:
 			if desired_shelf == shelf:
-				print('Такая полка уже существует! Повторите ввод')
-				break
+				return 'Такая полка уже существует!'
 		if desired_shelf != shelf:
 			last_dirs[desired_shelf] = []
 			result += 1
-	return last_dirs
+	number_of_dirs = len(last_dirs)
+	return number_of_dirs
 
 
 def user_control(docs, dirs):
@@ -150,4 +150,5 @@ def user_control(docs, dirs):
 			print(add_shelf(directories))
 		elif user_in == 'q':
 			break
-user_control(documents, directories)
+
+# user_control(documents, directories)
