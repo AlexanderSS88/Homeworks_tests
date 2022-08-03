@@ -1,11 +1,11 @@
 import unittest
 from parameterized import parameterized
 from unittest.mock import patch
-from Old_homework import documents as docs, directories as dirs, \
-    people, shelf, list_of_persons, add, delete, move, add_shelf
+from Old_homework import documents as docs, directories as dirs, people, shelf, list_of_persons, delete, add_shelf, move, add
 
 
 class test_hw1(unittest.TestCase):
+
 
     """Первая функция"""
     @patch('builtins.input', lambda *args: '10006')
@@ -28,6 +28,7 @@ class test_hw1(unittest.TestCase):
         self.assertEqual(people(docs, dirs), 'Документ с таким '
                                              'номером отсутствует в базе!')
 
+
     """Вторая функция"""
     @patch('builtins.input', lambda *args: "11-2")
     def test_shelf1(self):
@@ -38,46 +39,62 @@ class test_hw1(unittest.TestCase):
         self.assertEqual(shelf(dirs),
             'Документ с таким номером отсутствует в базе!')
 
+
     """Третья функция"""
     def test_list_of_persons(self):
-        ANSWER_OF_DEF = "invoice  11-2  Геннадий Покемонов \n" \
-                        "insurance  10006  Аристарх Павлов \n" \
-                        "passport  777  Tony Montana \n" \
-                        "invoice  999  Roy Boswell \n"
+        ANSWER_OF_DEF = "passport 2207 876234 Василий Гупкин\n" \
+                        "invoice 11-2 Геннадий Покемонов\n" \
+                        "insurance 10006 Аристарх Павлов\n"
         self.assertEqual(list_of_persons(docs), ANSWER_OF_DEF)
 
-    """Четвёртая функция"""
-    def test_add1(self):
-        number_of_docs_before = len(docs)
-        number_of_dirs_before = 0
-        number_of_dirs_before = sum([number_of_dirs_before + len(docums) for row, docums in dirs.items()])
-        expected_response = [number_of_docs_before + 1, number_of_dirs_before + 1]
-        self.assertEqual(add("passport", "777", "Tony Montana", "3"), expected_response)
 
-    def test_add2(self):
-        self.assertEqual(add("invoice", "999", "Roy Boswell", "4"), 'Такой полки не существует!')
+    """Четвёртая функция"""
+    @patch('builtins.input', side_effect=["3", "certificate", "777", "Boby Thornton"])
+    def test_add1(self, mock_input):
+        number_of_docs_before = len(docs)
+        number_of_dirs_before = len(dirs["3"])
+        expected_response = [number_of_docs_before + 1, number_of_dirs_before + 1]
+        self.assertEqual(add(docs, dirs), expected_response)
+
+    @patch('builtins.input', side_effect=["4", "passport", "999", "Nil Armstrong"])
+    def test_add2(self, mock_input):
+        expected_response = 'Такой полки не существует!'
+        self.assertEqual(add(docs, dirs), expected_response)
+
 
     """Пятая функция"""
     @patch('builtins.input', lambda *args: "2207 876234")
     def test_delete1(self):
-        number_of_dirs_before = len(dirs)
-        number_of_docs_before = 0
-        number_of_docs_before = sum([number_of_docs_before + len(docums) for row, docums in dirs.items()])
-        expected_response = [number_of_docs_before-1, number_of_dirs_before]
+        number_of_docs_before = len(docs)
+        number_of_dirs_before = 0
+        number_of_dirs_before = sum(
+            [number_of_dirs_before + len(list_docs) for id,
+            list_docs in dirs.items()
+            ]
+            )
+        expected_response = [number_of_docs_before - 1, number_of_dirs_before - 1]
         self.assertEqual(delete(docs, dirs), expected_response)
-        # number = input('Введите номер документа для удаления: ')
         return
 
     @patch('builtins.input', lambda *args: "2207")
     def test_delete2(self):
         self.assertEqual(delete(docs, dirs), 'Документ с таким номером отсутствует в базе!')
 
+
     """Шестая функция"""
-    @patch('builtins.input', lambda *args: "10006")
-    def test_move(self):
-        desired_shelf = 2
-        length_before = len(dirs['2'])
-        self.assertEqual(move(dirs, '2'), length_before)
+    @patch('builtins.input', side_effect=["10006", "3"])
+    def test_move1(self, mock_input):
+        length_before = len(dirs['3'])
+        self.assertEqual(move(dirs), length_before+1)
+
+    @patch('builtins.input', side_effect=["11-2", "4"])
+    def test_move2(self, mock_input):
+        self.assertEqual(move(dirs), 'Такой полки не существует!')
+
+    @patch('builtins.input', side_effect=["11", "3"])
+    def test_move3(self, mock_input):
+        self.assertEqual(move(dirs), 'Документ с таким номером отсутствует в базе!')
+
 
     """Седьмая функция"""
     @patch('builtins.input', lambda *args: "3")
